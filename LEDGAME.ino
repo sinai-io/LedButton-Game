@@ -102,8 +102,8 @@ int Logic(int num)
 {
  if (butt[num] == num && i == 1)
   {
-   score += 1;
-   Serial.print("                                                                  CORRECT! \n");
+    score += 1;
+    Serial.print("                                                                  CORRECT! \n");
   }
  else if (butt[num] != num && i == 1)
   {
