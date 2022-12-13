@@ -14,15 +14,38 @@ int ledInit[4] = {3, 9, 5, 2} ;
 
 class Timer
 {
-  public:
-    unsigned long newTimeValue;
+  private:
+    unsigned long  newTimeValue;
     unsigned long  limitValue;
     unsigned long  oldTimeValue;
-    unsigned long  timeleft;
 
+    int currentTime()
+    {
+      return (newTimeValue - oldTimeValue);
+    }
+
+  public:
     void updt()
     {
       newTimeValue = millis();    
+    }
+
+    void set(unsigned long timeToSet)
+    {
+      oldTimeValue = millis();
+      limitValue = timeToSet;
+    }
+
+    bool isRunning()
+    {
+      updt();
+      return ( currentTime() <= limitValue);
+    }
+
+    int timeLeft()
+    {
+      unsigned long timeleft = limitValue - currentTime();
+      return timeleft;
     }
 
     void specialDelayTimer(int *buttState)
@@ -50,24 +73,6 @@ class Timer
           break;
         }
       }
-    }
-
-    void set(unsigned long timeToSet)
-    {
-      oldTimeValue = millis();
-      limitValue = timeToSet;
-    }
-
-    bool isRunning()
-    {
-      newTimeValue = millis();
-      return ((newTimeValue - oldTimeValue) <= limitValue);
-    }
-
-    int timeLeft()
-    {
-      timeleft = limitValue - (newTimeValue - oldTimeValue);
-      return timeleft;
     }
 
 };
@@ -190,14 +195,6 @@ void countdown()
   lcd.print("  game started ");
 }
 
-void printScore(int score)
-{
-  lcd.setCursor(0, 1);
-  lcd.print("your score is:");
-  lcd.print(score);
-  Serial.print(score);
-}
-
 void printGameOverScore(int score)
 {
   lcd.clear();
@@ -205,7 +202,6 @@ void printGameOverScore(int score)
   lcd.setCursor(0, 1);
   lcd.print(" final score:");
   lcd.print(score);
-  Serial.print(score);
 }
 
 void printPressStartButton(int *buttState)
@@ -233,7 +229,6 @@ void setup()
 {
   lcd.init();
   lcd.backlight();
-  Serial.begin(9600);
   randomSeed(analogRead(0));
   srand(time(NULL));
 
@@ -290,7 +285,6 @@ void loop()
         score = score + (checkResult(b, buttState, &buttPressStatus));
         clearButt(buttState, &buttPressStatus); //clearing butt bufer
         ledOff(b); //turn off led
-        printScore(score);
       }
 
       break;
